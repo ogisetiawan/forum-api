@@ -4,6 +4,7 @@ const CommentRepository =
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 const GetThreadByIdUseCase = require('../GetThreadByIdUseCase');
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 
 describe('GetThreadByIdUseCase', () => {
   it('should orchestrating the get thread by id action correctly', async () => {
@@ -21,6 +22,7 @@ describe('GetThreadByIdUseCase', () => {
           username: 'dicoding',
           date: currentDate,
           content: 'x',
+          likeCount: 1,
           replies: [
             {
               id: 'reply-123',
@@ -36,6 +38,7 @@ describe('GetThreadByIdUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeRepository = new LikeRepository();
 
     mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(
         new DetailThread({
@@ -57,6 +60,13 @@ describe('GetThreadByIdUseCase', () => {
           },
         ],
     ));
+    mockLikeRepository.getCommentLikesCountByThreadId = jest
+        .fn(() => Promise.resolve([
+          {
+            comment_id: 'comment-123',
+            likes: 1,
+          },
+        ]));
     mockReplyRepository.getRepliesByThreadId = jest.fn(() => Promise.resolve(
         [
           {
@@ -74,6 +84,7 @@ describe('GetThreadByIdUseCase', () => {
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: mockLikeRepository,
     });
 
     const thread = await getThreadByIdUseCase.execute(useCasePayload.id);
@@ -102,6 +113,7 @@ describe('GetThreadByIdUseCase', () => {
           username: 'dicoding',
           date: currentDate,
           content: 'x',
+          likeCount: 0,
           replies: [
             {
               id: 'reply-123',
@@ -116,6 +128,7 @@ describe('GetThreadByIdUseCase', () => {
           username: 'dicoding',
           date: currentDate,
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           replies: [],
         },
       ],
@@ -124,6 +137,7 @@ describe('GetThreadByIdUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeRepository = new LikeRepository();
 
     mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(
         new DetailThread({
@@ -152,6 +166,17 @@ describe('GetThreadByIdUseCase', () => {
           },
         ],
     ));
+    mockLikeRepository.getCommentLikesCountByThreadId = jest
+        .fn(() => Promise.resolve([
+          {
+            comment_id: 'comment-123',
+            likes: 0,
+          },
+          {
+            comment_id: 'comment-124',
+            likes: 0,
+          },
+        ]));
     mockReplyRepository.getRepliesByThreadId = jest.fn(() => Promise.resolve(
         [
           {
@@ -169,6 +194,7 @@ describe('GetThreadByIdUseCase', () => {
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: mockLikeRepository,
     });
 
     const thread = await getThreadByIdUseCase.execute(useCasePayload.id);
