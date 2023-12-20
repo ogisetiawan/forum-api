@@ -22,13 +22,28 @@ describe('HTTP server', () => {
       fullname: 'Dicoding Indonesia',
       password: 'super_secret',
     };
-    const server = await createServer({}); // fake injection
-
+    const server = await createServer({}); // fake injectio
     // Action
     const response = await server.inject({
       method: 'POST',
       url: '/users',
       payload: requestPayload,
+    });
+
+    describe('when GET /', () => {
+      it('should return 200 and hello world', async () => {
+        // Arrange
+        const server = await createServer({});
+        // Action
+        const response = await server.inject({
+          method: 'GET',
+          url: '/',
+        });
+        // Assert
+        const responseJson = JSON.parse(response.payload);
+        expect(response.statusCode).toEqual(200);
+        expect(responseJson.value).toEqual('Hello world!');
+      });
     });
 
     // Assert
