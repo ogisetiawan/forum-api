@@ -21,7 +21,7 @@ const createServer = async (container) => {
     path: '/',
     handler: () => ({
       message: 'Welcome to Forum API v2 - @ogisetiawan',
-      value: 'Hello world!',
+      value: 'Hello nodejs!',
     }),
   });
 
